@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "dull"
+version = "0.1.0"
+description = ""
+authors = ["Isaaafc <isaaafc@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+rich = "^9.12.4"
+pandas = "^1.2.3"
+click = "^7.1.2"
+toml = "^0.10.2"
+xlrd = "^2.0.1"
+openpyxl = "^3.0.6"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

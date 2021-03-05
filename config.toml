@@ -1,0 +1,8 @@
+[UI]
+options = ["is_construction_term", "is_entity_name", "is_typo", "is_tokenization_error"]
+[Save]
+save_dir = "save"
+save_file_name = "save.csv"
+backup_file_name = "backup.csv"
+[Input]
+tokens_cols = ["token", "translation"]
