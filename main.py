@@ -9,5 +9,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    ui = UI(args.corpus_path, args.tokens_path, config['Save'], config['UI']['options'], config['Input']['tokens_cols'])
+    ui = UI(args.corpus_path, args.tokens_path, config['Save'], config['UI']['options'], config['Input']['tokens_cols'], config['UI']['display_range'])
     ui.start()

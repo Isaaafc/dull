@@ -12,6 +12,7 @@ click = "^7.1.2"
 toml = "^0.10.2"
 xlrd = "^2.0.1"
 openpyxl = "^3.0.6"
+ipykernel = "^5.5.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
