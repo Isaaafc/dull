@@ -1,6 +1,6 @@
 [UI]
 options = ["is_construction_term", "is_entity_name", "is_typo", "is_tokenization_error"]
-display_range = 20
+display_range = 15
 [Save]
 save_dir = "save"
 save_file_name = "save.csv"
