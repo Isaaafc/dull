@@ -110,12 +110,16 @@ def display_options(options, selected):
 # TODO create another class to separate display state
 
 class UI():
-    def __init__(self, corpus_path, tokens_path, save_config, options, tokens_cols, display_range=20, corpus_col_name='corpus', tokenized_col_name='preprocessed_tokens'):
+    def __init__(self, corpus_path, tokens_path, save_config, options, tokens_cols, display_range=20, corpus_col_name='short_event_description', tokenized_col_name='preprocessed_tokens', filter_na_cols=None):
         self.data = pd.read_csv(corpus_path)
         self.tokenized_col_name = tokenized_col_name
         self.corpus_col_name = corpus_col_name
 
         self.tokens = pd.read_csv(tokens_path)
+
+        if filter_na_cols is not None and len(filter_na_cols) > 0:
+            self.tokens = self.tokens.dropna(subset=filter_na_cols)
+
         self.tokens_cols = tokens_cols
 
         savedir = save_config['save_dir']

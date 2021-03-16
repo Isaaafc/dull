@@ -7,3 +7,4 @@ save_file_name = "save.csv"
 backup_file_name = "backup.csv"
 [Input]
 tokens_cols = ["token", "translation"]
+filter_na_cols = ["is_construction_term", "is_tokenization_error"]
