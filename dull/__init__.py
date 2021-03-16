@@ -167,7 +167,7 @@ class UI():
                         self.selected[self.options[int(c) - 1]] = not self.selected[self.options[int(c) - 1]]
                 elif c == ':':
                     self.msg = ':'
-                elif self.msg[0] == ':':
+                elif len(self.msg) > 0 and self.msg[0] == ':':
                     if c == 'q':
                         # Save to backup and quit
                         self.msg = ':q\nExiting'
@@ -269,8 +269,7 @@ class UI():
                 old_token, new_token = self.current_token(), get_first_item(self.display_state.token)
                 filt = (self.data[self.tokenized_col_name] == old_token) & (self.data[self.corpus_col_name].str.contains(new_token))
                 
-                self.data.loc[filt, self.tokens_cols[0]] = get_first_item(self.display_state.token)
-                self.data.loc[filt, self.tokens_cols[1]] = self.display_state.token[1]
+                self.data.loc[filt, self.tokenized_col_name] = get_first_item(self.display_state.token)
                 
                 for i, tc in enumerate(self.tokens_cols):
                     self.tokens.iloc[self.token_pos, self.tokens.columns.get_loc(tc)] = self.display_state.token[i]
@@ -292,7 +291,7 @@ class UI():
 
             c = click.getchar()
 
-            if c == '\t':
+            if c == '\t' or c == '\r':
                 self.msg = f'Edit token'
                 live.update(self.get_grid(), refresh=True)
                 return
