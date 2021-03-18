@@ -118,7 +118,7 @@ class UI():
         self.tokens = pd.read_csv(tokens_path)
 
         if filter_na_cols is not None and len(filter_na_cols) > 0:
-            self.tokens = self.tokens.dropna(subset=filter_na_cols)
+            self.tokens = self.tokens.dropna(subset=filter_na_cols, how='all')
 
         self.tokens_cols = tokens_cols
 
@@ -171,6 +171,7 @@ class UI():
                     if c == 'q':
                         # Save to backup and quit
                         self.msg = ':q\nExiting'
+                        live.update(self.get_grid(), refresh=True)
 
                         try:
                             self.save_token(self.tokens_backup_path)
@@ -186,8 +187,11 @@ class UI():
 
                         try:
                             self.msg = f':e\nSaving'
+                            live.update(self.get_grid(), refresh=True)
+
                             self.save_token(self.tokens_save_path)
                             self.save_corpus(self.corpus_save_path)
+                            
                             self.msg = 'Saved'
                         except:
                             self.msg = 'Save failed. Check if the file is opened in another program.'
@@ -261,6 +265,9 @@ class UI():
                 # Edit translation
                 self.edit_translation(live)
             elif c == '\r':
+                self.msg = ''
+                live.update(self.get_grid(), refresh=True)
+
                 # Save token and quit
                 self.display_state.current_selection_pos = None
                 self.display_state.highlight_token = None
@@ -278,8 +285,15 @@ class UI():
         
                 break
 
+            if c in 'zxcv':
+                # Update translation if the same token exists
+                prev = self.tokens.loc[self.tokens[self.tokens_cols[0]] == self.display_state.token[0]]
+
+                if len(prev) > 0:
+                    self.display_state.token[1] = prev.iloc[0][self.tokens_cols[1]]
+
     def edit_translation(self, live):
-        translation = self.tokens.iloc[self.token_pos][self.tokens_cols[1]]
+        translation = self.display_state.token[1]
 
         while True:
             self.msg = f'Editing translation: {translation}'
