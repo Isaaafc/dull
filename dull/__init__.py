@@ -38,6 +38,7 @@ v: right expand
 b: undo changes
 <tab>: edit translation
 <Enter>: save changes
+<del>: Delete token
 """
 
 edit_translation_instruction = """
@@ -116,6 +117,7 @@ class UI():
         self.corpus_col_name = corpus_col_name
 
         self.tokens = pd.read_csv(tokens_path)
+        self.max_token_id = self.tokens['id'].max() - 1
 
         if filter_na_cols is not None and len(filter_na_cols) > 0:
             self.tokens = self.tokens.dropna(subset=filter_na_cols, how='all')
@@ -264,25 +266,35 @@ class UI():
             elif c == '\t':
                 # Edit translation
                 self.edit_translation(live)
-            elif c == '\r':
-                self.msg = ''
-                live.update(self.get_grid(), refresh=True)
-
-                # Save token and quit
-                self.display_state.current_selection_pos = None
-                self.display_state.highlight_token = None
-
+            elif c == '\r': # <Enter>
                 # Edit the token in the corpus
                 old_token, new_token = self.current_token(), get_first_item(self.display_state.token)
                 filt = (self.data[self.tokenized_col_name] == old_token) & (self.data[self.corpus_col_name].str.contains(new_token))
                 
-                self.data.loc[filt, self.tokenized_col_name] = get_first_item(self.display_state.token)
-                
-                for i, tc in enumerate(self.tokens_cols):
-                    self.tokens.iloc[self.token_pos, self.tokens.columns.get_loc(tc)] = self.display_state.token[i]
+                if old_token == new_token:
+                    # If the token hasn't changed, only update the translation
+                    self.tokens.iloc[self.token_pos, self.tokens.columns.get_loc(self.tokens_cols[1])] = self.display_state.token[1]
+                else:
+                    # Update token in corpus
+                    self.data.loc[filt, self.tokenized_col_name] = get_first_item(self.display_state.token)
+                    r = self.tokens.iloc[self.token_pos]
 
+                    new_row = {k:r[k] for k in self.tokens.columns}
+
+                    self.max_token_id += 1
+                    new_row['id'] = self.max_token_id
+                    
+                    for i, c in enumerate(self.tokens_cols):
+                        new_row[c] = self.display_state.token[i]
+
+                    self.tokens = utils.ins_pos(self.tokens, new_row, self.token_pos)
+                
                 self.msg = ''
-        
+                
+                break
+            elif c == '\x1b[3~': # <del>
+                self.delete_token(live)
+
                 break
 
             if c in 'zxcv':
@@ -291,6 +303,29 @@ class UI():
 
                 if len(prev) > 0:
                     self.display_state.token[1] = prev.iloc[0][self.tokens_cols[1]]
+
+        self.display_state.current_selection_pos = None
+        self.display_state.highlight_token = None
+
+        live.update(self.get_grid(), refresh=True)
+
+    def delete_token(self, live):
+        self.msg = 'Confirm delete token? (y/n)'
+        live.update(self.get_grid(), refresh=True)
+
+        while True:
+            c = click.getchar()
+
+            if c.lower() == 'y':
+                # Delete token
+                self.tokens = utils.drop_by_iloc(self.tokens, self.token_pos)
+                self.msg = 'Token deleted'
+
+                break
+            elif c.lower() == 'n':
+                self.msg = ''
+
+                break
 
     def edit_translation(self, live):
         translation = self.display_state.token[1]
@@ -314,6 +349,9 @@ class UI():
             elif c in ['\x7f', '\x08']:
                 if len(translation) > 0:
                     translation = translation[:-1]
+
+    def insert_new_token(self, token):
+        pass
             
     def get_grid(self):
         layout = Layout()
