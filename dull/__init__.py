@@ -292,7 +292,7 @@ class UI():
                 self.msg = ''
                 
                 break
-            elif c == '\x1b[3~': # <del>
+            elif c in ['\x1b[3~', '\x00S']: # <del>
                 self.delete_token(live)
 
                 break
