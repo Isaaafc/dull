@@ -320,6 +320,7 @@ class UI():
                 # Delete token
                 self.tokens = utils.drop_by_iloc(self.tokens, self.token_pos)
                 self.msg = 'Token deleted'
+                self.token_pos -= 1
 
                 break
             elif c.lower() == 'n':
