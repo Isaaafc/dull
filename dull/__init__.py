@@ -321,6 +321,8 @@ class UI():
                 self.tokens = utils.drop_by_iloc(self.tokens, self.token_pos)
                 self.msg = 'Token deleted'
                 self.token_pos -= 1
+                self.goto_token(self.token_pos)
+                live.update(self.get_grid(), refresh=True)
 
                 break
             elif c.lower() == 'n':
